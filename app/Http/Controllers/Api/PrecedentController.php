@@ -34,15 +34,18 @@ class PrecedentController extends Controller
      */
     public function file(Precedent $precedent): JsonResponse
     {
-        // #comment URL عام لقراءة الملف من التخزين (بدون فرض التحميل)
-        $url = Storage::disk('public')->url($precedent->file_path);
+        $disk = Storage::disk('public');
+        $url = $disk->url($precedent->file_path);
+        // التحقق: هل الملف موجود فعلاً على السيرفر؟ (إذا لا = مشكلة استضافة/تخزين)
+        $fileAvailable = $disk->exists($precedent->file_path);
 
         return response()->json([
-            'id'             => $precedent->id,
-            'title'          => $precedent->title,
-            'file_type'      => $precedent->file_type,
-            'pdf_url'        => $url,
-            'allow_download' => $precedent->allow_download,
+            'id'              => $precedent->id,
+            'title'           => $precedent->title,
+            'file_type'       => $precedent->file_type,
+            'pdf_url'         => $url,
+            'allow_download'  => $precedent->allow_download,
+            'file_available'  => $fileAvailable,
         ]);
     }
 }

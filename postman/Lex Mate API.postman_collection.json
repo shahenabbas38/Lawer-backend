@@ -1,0 +1,83 @@
+{
+  "info": {
+    "name": "Lex Mate API",
+    "description": "مسارات API الباك اند — غيّر المتغيّر base_url لرابط الاستضافة أو localhost",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://your-api-domain.com",
+      "type": "string"
+    },
+    {
+      "key": "precedent_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "التحقق من الدفع",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"اسم المستخدم\",\n  \"operation_number\": \"رقم العملية\",\n  \"device_id\": \"معرّف الجهاز\"\n}"
+        },
+        "url": "{{base_url}}/api/verify-payment"
+      }
+    },
+    {
+      "name": "قائمة الاجتهادات (المستخدم)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Accept", "value": "application/json" } ],
+        "url": "{{base_url}}/api/precedents"
+      }
+    },
+    {
+      "name": "تفاصيل اجتهاد + رابط الملف",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Accept", "value": "application/json" } ],
+        "url": "{{base_url}}/api/precedents/{{precedent_id}}/file"
+      }
+    },
+    {
+      "name": "قائمة الاجتهادات (أدمن)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Accept", "value": "application/json" } ],
+        "url": "{{base_url}}/api/admin/precedents"
+      }
+    },
+    {
+      "name": "إضافة اجتهاد (أدمن)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Accept", "value": "application/json" } ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "title", "value": "عنوان الاجتهاد", "type": "text" },
+            { "key": "file", "type": "file", "src": "" }
+          ]
+        },
+        "url": "{{base_url}}/api/admin/precedents"
+      }
+    },
+    {
+      "name": "حذف اجتهاد (أدمن)",
+      "request": {
+        "method": "DELETE",
+        "header": [ { "key": "Accept", "value": "application/json" } ],
+        "url": "{{base_url}}/api/admin/precedents/{{precedent_id}}"
+      }
+    }
+  ]
+}
