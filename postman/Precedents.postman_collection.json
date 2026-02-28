@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "Precedents",
+    "description": "إدارة الاجتهادات (أدمن + مستخدم) — تطبيق المحامي",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    }
+  ],
+  "item": [
+    {
+      "name": "User - List Precedents",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/precedents",
+          "host": ["{{base_url}}"],
+          "path": ["api", "precedents"]
+        },
+        "description": "#comment جلب قائمة الاجتهادات للمستخدم (id + title فقط)"
+      }
+    },
+    {
+      "name": "User - Get Precedent File Info",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/precedents/1/file",
+          "host": ["{{base_url}}"],
+          "path": ["api", "precedents", "1", "file"]
+        },
+        "description": "#comment جلب رابط ملف اجتهاد معيّن (pdf_url) لفتحه في عارض الـ PDF بالفرونت"
+      }
+    },
+    {
+      "name": "Admin - List Precedents",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/admin/precedents",
+          "host": ["{{base_url}}"],
+          "path": ["api", "admin", "precedents"]
+        },
+        "description": "#comment جلب كل الاجتهادات للأدمن (لشاشة إدارة الاجتهادات)"
+      }
+    },
+    {
+      "name": "Admin - Create Precedent (Upload)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "title",
+              "value": "اجتهادات شرعية (1)",
+              "type": "text"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/admin/precedents",
+          "host": ["{{base_url}}"],
+          "path": ["api", "admin", "precedents"]
+        },
+        "description": "#comment رفع ملف اجتهاد جديد (PDF أو Word) مع عنوانه — يُخزن في storage ويُضاف سجل في DB"
+      }
+    },
+    {
+      "name": "Admin - Delete Precedent",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/admin/precedents/1",
+          "host": ["{{base_url}}"],
+          "path": ["api", "admin", "precedents", "1"]
+        },
+        "description": "#comment حذف اجتهاد (يحذف السجل من DB والملف من التخزين)"
+      }
+    }
+  ]
+}
+

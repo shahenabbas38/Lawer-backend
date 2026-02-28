@@ -1,0 +1,41 @@
+{
+  "info": {
+    "name": "VerifyPaymentController",
+    "description": "تحقق من الدفع — تطبيق المحامي",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Verify Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"أحمد\",\n  \"operation_number\": \"12345\",\n  \"device_id\": \"device_unique_123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/verify-payment",
+          "host": ["{{base_url}}"],
+          "path": ["api", "verify-payment"]
+        },
+        "description": "تحقق من الدفع وإنشاء/تحديث المستخدم. Body: name, operation_number, device_id"
+      }
+    }
+  ]
+}
