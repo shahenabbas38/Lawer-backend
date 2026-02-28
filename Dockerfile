@@ -15,7 +15,6 @@ RUN wget -q -O /tmp/calibre.txz "https://download.calibre-ebook.com/${CALIBRE_VE
     && tar xf /tmp/calibre.txz -C /opt \
     && rm /tmp/calibre.txz
 
-# تصحيح المسار ليكون متوافقاً مع مجلد استخراج Calibre
 ENV PATH="/opt/calibre:${PATH}"
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -24,8 +23,7 @@ COPY . .
 RUN composer install --no-dev --no-interaction --optimize-autoloader
 RUN chmod -R 775 storage bootstrap/cache
 
-# المنفذ الذي يستخدمه Railway
 EXPOSE 8080
 
-# تشغيل الـ Migrations والـ Queue (لتحويل الملفات) والسيرفر
-CMD sh -c "php artisan migrate --force && php artisan storage:link && (php artisan queue:work --tries=3 &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+# استخدام صيغة exec لضمان بقاء الحاوية Online
+CMD ["sh", "-c", "php artisan migrate --force && php artisan storage:link && (php artisan queue:work --tries=3 &) && php artisan serve --host=0.0.0.0 --port=8080"]
