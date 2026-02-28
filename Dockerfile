@@ -3,7 +3,7 @@ FROM php:8.2-cli-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev zip unzip git wget xz-utils \
     libfreetype6-dev libjpeg62-turbo-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
-    libgl1 libnss3 libcomposite0 libfontconfig1 libxext6 libxrender1 \
+    libgl1 libnss3 libfontconfig1 libxext6 libxrender1 \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) pdo pdo_mysql zip bcmath pcntl gd mbstring xml \
     && rm -rf /var/lib/apt/lists/*
