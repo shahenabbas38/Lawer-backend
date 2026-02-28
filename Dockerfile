@@ -1,52 +1,31 @@
-# صورة تشغيل Laravel + Calibre (تحويل EPUB → PDF) على Railway
 FROM php:8.2-cli-bookworm
 
-# حزم النظام + إضافات PHP للارافيل
+# تثبيت الحزم والمكتبات اللازمة لـ Calibre و Laravel
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libzip-dev \
-    zip \
-    unzip \
-    git \
-    wget \
-    xz-utils \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    libpq-dev \
+    libzip-dev zip unzip git wget xz-utils \
+    libfreetype6-dev libjpeg62-turbo-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
+    libgl1 libnss3 libcomposite0 libfontconfig1 libxext6 libxrender1 \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) pdo pdo_mysql zip bcmath pcntl gd mbstring xml \
     && rm -rf /var/lib/apt/lists/*
 
-# تثبيت Calibre (ebook-convert) لتحويل EPUB → PDF
-# إصدار ثابت متوافق مع Debian Bookworm
+# تثبيت Calibre
 ARG CALIBRE_VERSION=6.29.0
 RUN wget -q -O /tmp/calibre.txz "https://download.calibre-ebook.com/${CALIBRE_VERSION}/calibre-${CALIBRE_VERSION}-x86_64.txz" \
     && tar xf /tmp/calibre.txz -C /opt \
-    && CALDIR=$(ls -d /opt/calibre-* 2>/dev/null | head -1) \
-    && ln -sf "$CALDIR" /opt/calibre-bin \
-    && ( [ -x /opt/calibre-bin/calibre_postinstall ] && /opt/calibre-bin/calibre_postinstall 2>/dev/null || true ) \
     && rm /tmp/calibre.txz
 
-ENV PATH="/opt/calibre-bin:${PATH}"
+# تصحيح المسار ليكون متوافقاً مع مجلد استخراج Calibre
+ENV PATH="/opt/calibre:${PATH}"
 
-# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
 WORKDIR /app
-
 COPY . .
-
-# تثبيت الاعتماديات (بدون dev للاستضافة)
 RUN composer install --no-dev --no-interaction --optimize-autoloader
+RUN chmod -R 775 storage bootstrap/cache
 
-# صلاحيات التخزين
-RUN mkdir -p storage/app/public storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
-    && chmod -R 775 storage bootstrap/cache
+# المنفذ الذي يستخدمه Railway
+EXPOSE 8080
 
-# المنفذ يُحدد من متغير PORT على Railway
-EXPOSE 8000
-
-# يمكن لـ Railway استبدال هذا الأمر بـ Start Command من لوحة التحكم
-CMD ["sh", "-c", "php artisan migrate --force 2>/dev/null || true && php artisan storage:link 2>/dev/null || true && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
+# تشغيل الـ Migrations والـ Queue (لتحويل الملفات) والسيرفر
+CMD sh -c "php artisan migrate --force && php artisan storage:link && (php artisan queue:work --tries=3 &) && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
