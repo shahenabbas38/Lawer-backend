@@ -63,9 +63,18 @@ class AdminPrecedentController extends Controller
             'is_active'      => true,
         ]);
 
-        // تحويل تلقائي من EPUB إلى PDF في الخلفية (يحتاج Calibre مثبتاً على السيرفر)
+        // تحويل فوري من EPUB إلى PDF عند الرفع — المستخدم يرى PDF فقط (عرض + بحث، بدون نسخ/تحميل/لقطة شاشة)
         if ($fileType === 'epub') {
-            ConvertEpubToPdfJob::dispatch($precedent);
+            (new ConvertEpubToPdfJob($precedent))->handle();
+            $precedent->refresh();
+            if ($precedent->file_type !== 'pdf') {
+                Storage::disk('public')->delete($precedent->file_path);
+                $precedent->delete();
+                return response()->json([
+                    'message' => 'فشل تحويل EPUB إلى PDF. تأكد من تثبيت Calibre (ebook-convert) على السيرفر.',
+                    'errors'  => ['file' => ['فشل التحويل إلى PDF.']],
+                ], 422);
+            }
         }
 
         return response()->json([
