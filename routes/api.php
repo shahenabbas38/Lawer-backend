@@ -11,11 +11,13 @@ use App\Http\Controllers\Api\AdminPrecedentController;
 Route::post('/verify-payment', [VerifyPaymentController::class, 'verify']);
 
 /*
-| GET /api/precedents        — قائمة الاجتهادات للمستخدم
-| GET /api/precedents/{id}   — تفاصيل اجتهاد معيّن + رابط الملف
+| GET /api/precedents             — قائمة الاجتهادات للمستخدم
+| GET /api/precedents/{id}/file   — تفاصيل اجتهاد + رابط الملف
+| GET /api/precedents/{id}/view   — خدمة الملف للعرض فقط (inline، بدون تحميل)
 */
 Route::get('/precedents', [PrecedentController::class, 'index']);
 Route::get('/precedents/{precedent}/file', [PrecedentController::class, 'file']);
+Route::get('/precedents/{precedent}/view', [PrecedentController::class, 'view'])->name('api.precedents.view');
 
 /*
 | مسارات الأدمن لإدارة الاجتهادات (ربطها لاحقاً بحماية auth للأدمن فقط)
